@@ -1,0 +1,39 @@
+groups:
+  - name: credit-model
+    rules:
+      - alert: DataDriftCritical
+        expr: max by (window) (credit_feature_psi) >= 0.20
+        labels: { severity: critical }
+        annotations:
+          summary: "PSI crítico (>= 0,20) na janela {{ $labels.window }}"
+          runbook: "docs/MONITORING.md#datadriftcritical"
+
+      - alert: ModelAUCBelowSLO
+        expr: credit_model_auc < 0.72
+        labels: { severity: critical }
+        annotations:
+          summary: "AUC abaixo do SLO (0,72) na janela {{ $labels.window }}"
+          runbook: "docs/MONITORING.md#modelaucbelowslo"
+
+  - name: credit-pipeline
+    rules:
+      - alert: ContractViolation
+        expr: credit_contract_status == 0
+        labels: { severity: critical }
+        annotations:
+          summary: "Lote {{ $labels.batch }} reprovado no data contract (ingestão bloqueada)"
+          runbook: "docs/MONITORING.md#contractviolation"
+
+      - alert: PipelineTaskFailed
+        expr: credit_task_status == 0
+        labels: { severity: critical }
+        annotations:
+          summary: "Task {{ $labels.task }} falhou"
+          runbook: "docs/MONITORING.md#pipelinetaskfailed"
+
+      - alert: PipelineStale
+        expr: time() - credit_last_success_timestamp > 604800
+        labels: { severity: warning }
+        annotations:
+          summary: "Task {{ $labels.task }} sem sucesso há mais de 7 dias"
+          runbook: "docs/MONITORING.md#pipelinestale"

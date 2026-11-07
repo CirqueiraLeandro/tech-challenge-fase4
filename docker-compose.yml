@@ -1,0 +1,36 @@
+# Stack de observabilidade: MLflow (ciclo de vida) + Pushgateway/Prometheus/Grafana (operação).
+# Subir: docker compose up -d   |   Derrubar: docker compose down
+# Grafana: http://localhost:3000 (admin/admin) | Prometheus: :9090 | Pushgateway: :9091 | MLflow: :5000
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.18.0
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+    ports: ["5000:5000"]
+    volumes: ["mlflow_data:/mlflow"]
+
+  pushgateway:
+    image: prom/pushgateway:v1.9.0
+    ports: ["9091:9091"]
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    ports: ["9090:9090"]
+    volumes: ["./monitoring/prometheus:/etc/prometheus:ro"]
+    depends_on: [pushgateway]
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports: ["3000:3000"]
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+
+volumes:
+  mlflow_data:

@@ -58,7 +58,7 @@ def tracked_run(
 
 def _start(experiment: str, run_name: str, tags: dict[str, str], settings: Settings | None) -> Any:
     configure(experiment, settings)
-    return mlflow.start_run(run_name=run_name, tags=tags)
+    return mlflow.start_run(run_name=run_name, tags=tags, nested=mlflow.active_run() is not None)
 
 
 def log_metrics(metrics: dict[str, float], step: int | None = None) -> None:
@@ -75,3 +75,23 @@ def log_params(params: dict[str, Any]) -> None:
 def log_artifact(path: Path) -> None:
     """Loga um arquivo como artefato do run ativo."""
     safe(mlflow.log_artifact, str(path))
+
+
+def record_validation(name: str, result: Any, report_path: Path | None = None) -> None:
+    """Registra a validação de um lote: métricas Prometheus + run em 'data-validation'."""
+    from src.monitoring.metrics import BATCHES, get_metrics
+
+    batch = name if name in BATCHES else "incoming"
+    metrics = get_metrics()
+    metrics.set_contract(batch, result.passed)
+    metrics.count_rows("validate", result.n_rows)
+    for violation in result.violations:
+        metrics.count_rejected(violation.rule_id, violation.n_cases)
+    with tracked_run(EXP_VALIDATION, f"validate-{name}", {"batch": name}) as run:
+        if run is None:
+            return
+        log_metrics({"n_rows": result.n_rows, "n_failed_rows": result.n_failed_rows})
+        log_metrics({"passed": int(result.passed), "n_soft_warnings": len(result.soft_warnings)})
+        safe(mlflow.set_tag, "violated_rules", ",".join(result.violated_rules) or "none")
+        if report_path is not None:
+            log_artifact(report_path)

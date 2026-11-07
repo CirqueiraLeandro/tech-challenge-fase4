@@ -22,6 +22,7 @@ from src.contracts.rules import (
 from src.contracts.schemas import CONTRACT_VERSION, RawCreditSchema
 from src.exceptions import ContractViolationError
 from src.logger import get_logger, run_id_var
+from src.monitoring.tracking import record_validation
 from src.privacy.pseudonymize import pseudonymize_ids, short_hash
 
 logger = get_logger(__name__)
@@ -208,7 +209,8 @@ def ingest_and_validate(
     settings = settings or get_settings()
     df = pseudonymize_ids(df, settings)
     result = validate_batch(df, stats, settings=settings)
-    write_report(result, name, settings.path("reports") / "contracts")
+    report = write_report(result, name, settings.path("reports") / "contracts")
+    record_validation(name, result, report)
     logger.info(
         "contrato_validado",
         extra={
