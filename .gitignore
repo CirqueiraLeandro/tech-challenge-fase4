@@ -32,3 +32,5 @@ Thumbs.db
 # Arquivos locais de apoio na raiz (não versionados)
 /*.pdf
 /*.txt
+
+demo_output/

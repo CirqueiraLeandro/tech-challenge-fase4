@@ -1,0 +1,199 @@
+{
+  "M1": {
+    "n_rows": 1200,
+    "drift_share": 0.0,
+    "n_drifted": 0,
+    "drifted_features": [],
+    "max_psi": 0.026097615425699758,
+    "auc": 0.7746256895193064,
+    "ks": 0.42112826217957633,
+    "brier": 0.13940152525901794,
+    "predicted_rate": 0.21789316833019257,
+    "observed_rate": 0.235,
+    "calibration_gap": -0.01710683166980742,
+    "score_psi": 0.006936263574183665,
+    "auc_drop": 0.00892853846799102,
+    "severity": "OK",
+    "action": "observar",
+    "reasons": [
+      "sem sinais de degradação"
+    ],
+    "cross_check": {
+      "own_share": 0.0,
+      "evidently_share": 0.0,
+      "jaccard": 1.0,
+      "only_own": [],
+      "only_evidently": []
+    }
+  },
+  "M2": {
+    "n_rows": 1200,
+    "drift_share": 0.08,
+    "n_drifted": 2,
+    "drifted_features": [
+      "limit_bal",
+      "utilization"
+    ],
+    "max_psi": 0.17516114130477034,
+    "auc": 0.7717699595679199,
+    "ks": 0.45845151167702614,
+    "brier": 0.14595849812030792,
+    "predicted_rate": 0.2377566546201706,
+    "observed_rate": 0.24333333333333335,
+    "calibration_gap": -0.005576678713162753,
+    "score_psi": 0.02010888211455364,
+    "auc_drop": 0.01178426841937752,
+    "severity": "ATENCAO",
+    "action": "investigar e revisar thresholds",
+    "reasons": [
+      "PSI moderado/severo sem queda crítica de AUC"
+    ],
+    "cross_check": {
+      "own_share": 0.08,
+      "evidently_share": 0.0,
+      "jaccard": 0.0,
+      "only_own": [
+        "limit_bal",
+        "utilization"
+      ],
+      "only_evidently": []
+    }
+  },
+  "M3": {
+    "n_rows": 1200,
+    "drift_share": 0.12,
+    "n_drifted": 3,
+    "drifted_features": [
+      "limit_bal",
+      "pay_2",
+      "utilization"
+    ],
+    "max_psi": 0.2808869636827837,
+    "auc": 0.7867547354707364,
+    "ks": 0.45594217541087595,
+    "brier": 0.14123721420764923,
+    "predicted_rate": 0.2600364089012146,
+    "observed_rate": 0.24083333333333334,
+    "calibration_gap": 0.019203075567881256,
+    "score_psi": 0.048558639026494835,
+    "auc_drop": -0.003200507483438919,
+    "severity": "ATENCAO",
+    "action": "investigar e revisar thresholds",
+    "reasons": [
+      "PSI moderado/severo sem queda crítica de AUC"
+    ],
+    "cross_check": {
+      "own_share": 0.12,
+      "evidently_share": 0.08,
+      "jaccard": 0.6666666666666666,
+      "only_own": [
+        "limit_bal"
+      ],
+      "only_evidently": []
+    }
+  },
+  "M4": {
+    "n_rows": 1200,
+    "drift_share": 0.16,
+    "n_drifted": 4,
+    "drifted_features": [
+      "limit_bal",
+      "pay_2",
+      "utilization",
+      "payment_ratio"
+    ],
+    "max_psi": 0.42873739534923827,
+    "auc": 0.7442540067560529,
+    "ks": 0.37801157755323744,
+    "brier": 0.1569700390100479,
+    "predicted_rate": 0.2459288090467453,
+    "observed_rate": 0.24833333333333332,
+    "calibration_gap": -0.0024045242865880223,
+    "score_psi": 0.04730242911899607,
+    "auc_drop": 0.03930022123124455,
+    "severity": "ATENCAO",
+    "action": "investigar e revisar thresholds",
+    "reasons": [
+      "PSI moderado/severo sem queda crítica de AUC",
+      "queda de AUC de atenção"
+    ],
+    "cross_check": {
+      "own_share": 0.16,
+      "evidently_share": 0.12,
+      "jaccard": 0.75,
+      "only_own": [
+        "payment_ratio"
+      ],
+      "only_evidently": []
+    }
+  },
+  "M5": {
+    "n_rows": 1200,
+    "drift_share": 0.16,
+    "n_drifted": 4,
+    "drifted_features": [
+      "limit_bal",
+      "pay_2",
+      "utilization",
+      "payment_ratio"
+    ],
+    "max_psi": 0.5712683687142355,
+    "auc": 0.7678857142857143,
+    "ks": 0.42067226890756304,
+    "brier": 0.16461199522018433,
+    "predicted_rate": 0.26585179567337036,
+    "observed_rate": 0.2916666666666667,
+    "calibration_gap": -0.025814870993296324,
+    "score_psi": 0.07532570294330636,
+    "auc_drop": 0.015668513701583175,
+    "severity": "ATENCAO",
+    "action": "investigar e revisar thresholds",
+    "reasons": [
+      "PSI moderado/severo sem queda crítica de AUC"
+    ],
+    "cross_check": {
+      "own_share": 0.16,
+      "evidently_share": 0.12,
+      "jaccard": 0.75,
+      "only_own": [
+        "payment_ratio"
+      ],
+      "only_evidently": []
+    }
+  },
+  "M6": {
+    "n_rows": 1200,
+    "drift_share": 0.16,
+    "n_drifted": 4,
+    "drifted_features": [
+      "limit_bal",
+      "pay_2",
+      "utilization",
+      "payment_ratio"
+    ],
+    "max_psi": 0.6204888793514197,
+    "auc": 0.7501279302721486,
+    "ks": 0.3842423350535634,
+    "brier": 0.17328673601150513,
+    "predicted_rate": 0.2515272796154022,
+    "observed_rate": 0.2941666666666667,
+    "calibration_gap": -0.042639387051264466,
+    "score_psi": 0.05374534985376852,
+    "auc_drop": 0.03342629771514882,
+    "severity": "ATENCAO",
+    "action": "investigar e revisar thresholds",
+    "reasons": [
+      "PSI moderado/severo sem queda crítica de AUC",
+      "queda de AUC de atenção"
+    ],
+    "cross_check": {
+      "own_share": 0.16,
+      "evidently_share": 0.12,
+      "jaccard": 0.75,
+      "only_own": [
+        "payment_ratio"
+      ],
+      "only_evidently": []
+    }
+  }
+}

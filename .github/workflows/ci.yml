@@ -88,4 +88,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: reports
-          path: reports/
+          path: demo_output/reports/

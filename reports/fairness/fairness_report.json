@@ -1,0 +1,111 @@
+{
+  "reference_test": {
+    "sex": {
+      "groups": {
+        "feminino": {
+          "n": 2167,
+          "approval_rate": 0.8869404706968159,
+          "good_payer_approval_rate": 0.9601873536299765,
+          "default_rate": 0.21181356714351637,
+          "auc": 0.7880396238641176
+        },
+        "masculino": {
+          "n": 1433,
+          "approval_rate": 0.8688066992323796,
+          "good_payer_approval_rate": 0.9443430656934306,
+          "default_rate": 0.23517096999302164,
+          "auc": 0.7751954774848924
+        }
+      },
+      "disparate_impact": 0.9795546915903052,
+      "passes_80_percent_rule": true,
+      "equal_opportunity_diff": 0.01584428793654591
+    },
+    "age_band": {
+      "groups": {
+        "25-40": {
+          "n": 2166,
+          "approval_rate": 0.8896583564173592,
+          "good_payer_approval_rate": 0.9580908032596042,
+          "default_rate": 0.20683287165281625,
+          "auc": 0.7762679558872444
+        },
+        "<25": {
+          "n": 313,
+          "approval_rate": 0.8019169329073482,
+          "good_payer_approval_rate": 0.9213973799126638,
+          "default_rate": 0.268370607028754,
+          "auc": 0.8083281347473488
+        },
+        "40-60": {
+          "n": 1086,
+          "approval_rate": 0.8812154696132597,
+          "good_payer_approval_rate": 0.9542168674698795,
+          "default_rate": 0.23572744014732966,
+          "auc": 0.788405967620482
+        },
+        ">60": {
+          "n": 35,
+          "approval_rate": 0.9142857142857143,
+          "good_payer_approval_rate": 0.9629629629629629,
+          "default_rate": 0.22857142857142856,
+          "auc": 0.7824074074074074
+        }
+      },
+      "disparate_impact": 0.8770966453674122,
+      "passes_80_percent_rule": true,
+      "equal_opportunity_diff": 0.041565583050299115
+    }
+  },
+  "M6": {
+    "sex": {
+      "groups": {
+        "feminino": {
+          "n": 752,
+          "approval_rate": 0.8656914893617021,
+          "good_payer_approval_rate": 0.9481481481481482,
+          "default_rate": 0.28191489361702127,
+          "auc": 0.7654219077568134
+        },
+        "masculino": {
+          "n": 448,
+          "approval_rate": 0.8638392857142857,
+          "good_payer_approval_rate": 0.9315960912052117,
+          "default_rate": 0.31473214285714285,
+          "auc": 0.7251599787465057
+        }
+      },
+      "disparate_impact": 0.9978604344963792,
+      "passes_80_percent_rule": true,
+      "equal_opportunity_diff": 0.01655205694293649
+    },
+    "age_band": {
+      "groups": {
+        "25-40": {
+          "n": 732,
+          "approval_rate": 0.8907103825136612,
+          "good_payer_approval_rate": 0.9550561797752809,
+          "default_rate": 0.27049180327868855,
+          "auc": 0.7531163696894033
+        },
+        "<25": {
+          "n": 139,
+          "approval_rate": 0.7697841726618705,
+          "good_payer_approval_rate": 0.9390243902439024,
+          "default_rate": 0.41007194244604317,
+          "auc": 0.8121523320496363
+        },
+        "40-60": {
+          "n": 322,
+          "approval_rate": 0.8509316770186336,
+          "good_payer_approval_rate": 0.9118942731277533,
+          "default_rate": 0.2950310559006211,
+          "auc": 0.6961279851611408
+        }
+      },
+      "disparate_impact": 0.8642362183872534,
+      "passes_80_percent_rule": true,
+      "equal_opportunity_diff": 0.043161906647527615
+    }
+  }
+}

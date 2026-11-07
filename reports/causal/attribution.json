@@ -1,0 +1,27 @@
+{
+  "dominant_data_interventional": "inflacao",
+  "dominant_performance_interventional": "desemprego",
+  "dominant_performance_observational": "desemprego",
+  "full": {
+    "auc": 0.7501279302721486,
+    "calibration_gap": -0.042639387051264466,
+    "brier": 0.17328673601150513,
+    "drift_share": 0.16,
+    "psi_sum": 2.2059580428363588
+  },
+  "none": {
+    "auc": 0.7546631170048892,
+    "calibration_gap": 0.0010091149806976396,
+    "brier": 0.1377011090517044,
+    "drift_share": 0.0,
+    "psi_sum": 0.3127661361998756
+  },
+  "observational_matches_intervention": {
+    "inflacao": false,
+    "aperto": false,
+    "desemprego": false,
+    "perfil_jovem": false
+  },
+  "sum_solo_calibration_gap": -0.01398743013540904,
+  "total_calibration_gap_effect": -0.043648502031962105
+}
