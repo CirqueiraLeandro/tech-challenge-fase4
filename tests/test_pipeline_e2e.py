@@ -123,3 +123,15 @@ def test_isolate_environment_redirects_everything(tmp_path, monkeypatch):
         os.environ.clear()
         os.environ.update(saved_env)
         get_settings.cache_clear()
+
+
+def test_build_pdfs_renders_tables_and_finds_no_browser(monkeypatch):
+    from scripts import build_pdfs
+
+    html = build_pdfs.render_html("# Título\n\n| a | b |\n|---|---|\n| 1 | 2 |\n", "T")
+    assert (
+        "<table>" in html and "<h1>" in html and 'charset="utf-8"' in html.lower().replace("'", '"')
+    )
+    monkeypatch.setattr(build_pdfs, "CHROME_CANDIDATES", ["/nao/existe/chrome"])
+    monkeypatch.delenv("CHROME_PATH", raising=False)
+    assert build_pdfs.find_chrome() is None and build_pdfs.main() == 1

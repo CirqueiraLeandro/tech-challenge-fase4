@@ -108,7 +108,7 @@ def test_validate_reference_rejects_bad_reference(prepared):
 def test_evaluate_champion_writes_metrics(prepared):
     train.run(prepared)
     metrics = evaluate_champion(prepared)
-    assert (prepared.path("models") / "metrics.json").exists() and metrics["auc"] > 0.5
+    assert (prepared.path("models") / "metrics_champion.json").exists() and metrics["auc"] > 0.5
 
 
 def test_explain_contributions_sum_to_margin(prepared):

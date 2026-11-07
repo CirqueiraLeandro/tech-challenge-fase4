@@ -34,3 +34,5 @@ Thumbs.db
 /*.txt
 
 demo_output/
+
+reports/contracts/good_batch_*

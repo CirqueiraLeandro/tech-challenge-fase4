@@ -78,7 +78,7 @@ def write_metrics(metrics: dict, path: Path) -> None:
 
 
 def evaluate_champion(settings: Settings | None = None) -> dict:
-    """Avalia o champion no conjunto de teste do reference e grava models/metrics.json."""
+    """Avalia o champion no conjunto de teste do reference e grava models/metrics_champion.json."""
     from src.models.artifacts import load_model
     from src.models.train import load_test_split
 
@@ -88,7 +88,7 @@ def evaluate_champion(settings: Settings | None = None) -> dict:
     metrics = compute_metrics(
         y_test.to_numpy(), model.predict_proba(x_test)[:, 1], settings.decision_threshold
     )
-    write_metrics(metrics, settings.path("models") / "metrics.json")
+    write_metrics(metrics, settings.path("models") / "metrics_champion.json")
     logger.info("avaliacao_champion", extra={"auc": metrics["auc"], "ks": metrics["ks"]})
     return metrics
 

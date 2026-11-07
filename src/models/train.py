@@ -136,7 +136,8 @@ def finalize(
     }
     save_model(model, settings.model_type, models_dir / "candidate", meta)
     plot = plot_confusion(metrics["confusion"], models_dir / "confusion_matrix.png")
-    write_metrics(metrics, models_dir / "metrics.json")
+    # metrics_<label>.json preserva o baseline ("train") após um retreino ("retrain")
+    write_metrics(metrics, models_dir / f"metrics_{label}.json")
     version = track_training(
         model, x_te, metrics, meta | {"model_type": settings.model_type, "label": label}, plot
     )
