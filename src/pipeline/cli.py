@@ -35,6 +35,13 @@ def _prepare(args: argparse.Namespace) -> object:
     return stages.prepare()
 
 
+@command("train")
+def _train(args: argparse.Namespace) -> object:
+    from src.models import train
+
+    return train.run()
+
+
 @command("validate")
 def _validate(args: argparse.Namespace) -> object:
     return stages.validate_file(Path(args.file))
