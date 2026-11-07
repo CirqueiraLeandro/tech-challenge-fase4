@@ -37,42 +37,43 @@ def closed(value: str, allowed: list[str]) -> str:
     return value if value in allowed else OTHER
 
 
+# atributo -> (tipo, nome Prometheus, descrição, labels). Counter expõe o sufixo "_total".
+METRIC_SPECS: dict[str, tuple[type, str, str, list[str]]] = {
+    "task_status": (Gauge, "credit_task_status", "1 ok / 0 falha", ["task"]),
+    "task_duration": (Gauge, "credit_task_duration_seconds", "Duração da task", ["task"]),
+    "task_memory": (Gauge, "credit_task_peak_memory_bytes", "Memória de pico da task", ["task"]),
+    "rows_processed": (Counter, "credit_rows_processed", "Linhas processadas", ["stage"]),
+    "rows_rejected": (Counter, "credit_rows_rejected", "Linhas rejeitadas por regra", ["rule"]),
+    "contract_status": (Gauge, "credit_contract_status", "1 aprovado / 0 reprovado", ["batch"]),
+    "feature_psi": (Gauge, "credit_feature_psi", "PSI por feature e janela", ["feature", "window"]),
+    "drift_share": (Gauge, "credit_drift_share", "Fração de features em drift", ["window"]),
+    "model_auc": (Gauge, "credit_model_auc", "AUC por janela", ["window"]),
+    "calibration_gap": (Gauge, "credit_calibration_gap", "Previsto - observado", ["window"]),
+    "alerts": (Counter, "credit_alerts", "Alertas emitidos", ["type", "severity"]),
+    "last_success": (Gauge, "credit_last_success_timestamp", "Epoch do último sucesso", ["task"]),
+}  # fmt: skip
+
+
 class PipelineMetrics:
     """Conjunto de métricas do pipeline em um registry próprio."""
 
+    task_status: Gauge
+    task_duration: Gauge
+    task_memory: Gauge
+    rows_processed: Counter
+    rows_rejected: Counter
+    contract_status: Gauge
+    feature_psi: Gauge
+    drift_share: Gauge
+    model_auc: Gauge
+    calibration_gap: Gauge
+    alerts: Counter
+    last_success: Gauge
+
     def __init__(self) -> None:
         self.registry = CollectorRegistry()
-        r = self.registry
-        self.task_status = Gauge("credit_task_status", "1 ok / 0 falha", ["task"], registry=r)
-        self.task_duration = Gauge(
-            "credit_task_duration_seconds", "Duração da task", ["task"], registry=r
-        )
-        self.task_memory = Gauge(
-            "credit_task_peak_memory_bytes", "Memória de pico da task", ["task"], registry=r
-        )
-        self.rows_processed = Counter(
-            "credit_rows_processed", "Linhas processadas", ["stage"], registry=r
-        )
-        self.rows_rejected = Counter(
-            "credit_rows_rejected", "Linhas rejeitadas por regra", ["rule"], registry=r
-        )
-        self.contract_status = Gauge(
-            "credit_contract_status", "1 aprovado / 0 reprovado", ["batch"], registry=r
-        )
-        self.feature_psi = Gauge(
-            "credit_feature_psi", "PSI por feature e janela", ["feature", "window"], registry=r
-        )
-        self.drift_share = Gauge(
-            "credit_drift_share", "Fração de features em drift", ["window"], registry=r
-        )
-        self.model_auc = Gauge("credit_model_auc", "AUC por janela", ["window"], registry=r)
-        self.calibration_gap = Gauge(
-            "credit_calibration_gap", "Previsto - observado", ["window"], registry=r
-        )
-        self.alerts = Counter("credit_alerts", "Alertas emitidos", ["type", "severity"], registry=r)
-        self.last_success = Gauge(
-            "credit_last_success_timestamp", "Epoch do último sucesso", ["task"], registry=r
-        )
+        for attr, (kind, name, doc, labels) in METRIC_SPECS.items():
+            setattr(self, attr, kind(name, doc, labels, registry=self.registry))
 
     def set_task(self, task: str, ok: bool, duration: float, memory: float) -> None:
         """Registra status, duração, memória e (se ok) o instante do último sucesso."""

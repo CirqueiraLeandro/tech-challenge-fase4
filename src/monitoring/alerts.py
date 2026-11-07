@@ -49,6 +49,7 @@ class LogSink(AlertSink):
         self.path = path
 
     def send(self, alert: Alert) -> None:
+        """Acrescenta o alerta em JSONL e no log estruturado."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
         record = {"timestamp": datetime.now(UTC).isoformat(), **asdict(alert)}
         with self.path.open("a", encoding="utf-8") as handle:
@@ -60,6 +61,7 @@ class MlflowSink(AlertSink):
     """Anota o run ativo do MLflow com o alerta (se houver run)."""
 
     def send(self, alert: Alert) -> None:
+        """Marca o run ativo com uma tag por alerta."""
         if mlflow.active_run() is not None:
             key = f"alert.{alert.type}.{alert.window or 'global'}"
             mlflow.set_tag(key, alert.severity)
@@ -72,6 +74,7 @@ class PrometheusSink(AlertSink):
         self.metrics = metrics
 
     def send(self, alert: Alert) -> None:
+        """Incrementa o contador de alertas."""
         (self.metrics or get_metrics()).count_alert(alert.type, alert.severity)
 
 
@@ -82,6 +85,7 @@ class WebhookSink(AlertSink):
         self.url = url
 
     def send(self, alert: Alert) -> None:
+        """Envia o alerta por POST (só se houver URL)."""
         if self.url:
             requests.post(self.url, json=asdict(alert), timeout=WEBHOOK_TIMEOUT_S)
 

@@ -78,12 +78,16 @@ def interventional_attribution(
 ) -> pd.DataFrame:
     """Atribuição por intervenção do(mecanismo = referência), um por vez e isolado."""
     mechanisms = list(MECHANISM_COLUMNS)
-    run = lambda off: _scenario_metrics(ctx, chunk, k, t, scenario, seed, frozenset(off))  # noqa: E731
+
+    def run(off: list[str]) -> dict[str, float]:
+        """Métricas da janela com os mecanismos ``off`` desligados."""
+        return _scenario_metrics(ctx, chunk, k, t, scenario, seed, frozenset(off))
+
     full, none = run([]), run(mechanisms)
     rows = []
     for m in mechanisms:
         without, solo = run([m]), run([x for x in mechanisms if x != m])
-        row = {"method": "interventional", "mechanism": m}
+        row: dict[str, object] = {"method": "interventional", "mechanism": m}
         for name in METRICS:
             row[f"delta_{name}"] = full[name] - without[name]  # o que o mecanismo causa
             row[f"solo_{name}"] = solo[name] - none[name]  # efeito isolado
@@ -173,28 +177,30 @@ def _agreement(inter: pd.DataFrame, obs: pd.DataFrame) -> dict[str, bool]:
     }
 
 
-def write_attribution(inter: pd.DataFrame, obs: pd.DataFrame, out: Path) -> dict:
-    """Grava attribution.csv/.png e attribution.json (com o veredito da comparação)."""
-    out.mkdir(parents=True, exist_ok=True)
-    pd.concat([inter, obs], ignore_index=True).to_csv(
-        out / "attribution.csv", index=False, encoding="utf-8"
-    )
-    plot_attribution(inter, obs, out / "attribution.png")
-    solo_sum = float(inter["solo_calibration_gap"].sum())
-    verdict = {
+def build_verdict(inter: pd.DataFrame, obs: pd.DataFrame) -> dict:
+    """Veredito: mecanismos dominantes, concordância observacional e (não-)aditividade."""
+    full, none = inter.attrs["full"], inter.attrs["none"]
+    return {
         "dominant_data_interventional": dominant(inter, "delta_psi_sum"),
         "dominant_performance_interventional": dominant(inter, "delta_calibration_gap"),
         "dominant_performance_observational": dominant(obs, "delta_calibration_gap"),
-        "full": inter.attrs["full"],
-        "none": inter.attrs["none"],
+        "full": full,
+        "none": none,
         "observational_matches_intervention": _agreement(inter, obs),
-        "sum_solo_calibration_gap": solo_sum,
-        "total_calibration_gap_effect": inter.attrs["full"]["calibration_gap"]
-        - inter.attrs["none"]["calibration_gap"],
+        "sum_solo_calibration_gap": float(inter["solo_calibration_gap"].sum()),
+        "total_calibration_gap_effect": full["calibration_gap"] - none["calibration_gap"],
     }
-    (out / "attribution.json").write_text(
-        json.dumps(verdict, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+
+
+def write_attribution(inter: pd.DataFrame, obs: pd.DataFrame, out: Path) -> dict:
+    """Grava attribution.csv/.png e attribution.json (com o veredito da comparação)."""
+    out.mkdir(parents=True, exist_ok=True)
+    table = pd.concat([inter, obs], ignore_index=True)
+    table.to_csv(out / "attribution.csv", index=False, encoding="utf-8")
+    plot_attribution(inter, obs, out / "attribution.png")
+    verdict = build_verdict(inter, obs)
+    text = json.dumps(verdict, ensure_ascii=False, indent=2)
+    (out / "attribution.json").write_text(text, encoding="utf-8")
     return verdict
 
 

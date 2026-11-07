@@ -111,37 +111,32 @@ def emit_window(
 
 
 def _alerts(report: dict, cfg: MonitoringConfig, dispatcher: AlertDispatcher) -> None:
-    name, table, perf, decision = (
-        report["window"],
-        report["table"],
-        report["performance"],
-        report["decision"],
-    )
+    """Emite os alertas da janela: drift de dados primeiro, depois degradação do modelo."""
+    for alert in (_drift_alert(report, cfg), _model_alert(report, cfg)):
+        if alert is not None:
+            dispatcher.notify(alert)
+
+
+def _drift_alert(report: dict, cfg: MonitoringConfig) -> Alert | None:
+    """Alerta crítico se alguma feature tem PSI >= severo (espelha DataDriftCritical)."""
+    name, table = report["window"], report["table"]
+    if table["psi"].max() < cfg.psi_severe:
+        return None
     top = table.sort_values("psi", ascending=False).head(3)["feature"].tolist()
-    if table["psi"].max() >= cfg.psi_severe:
-        dispatcher.notify(
-            Alert(
-                "data_drift",
-                "critical",
-                f"PSI >= {cfg.psi_severe} em {name}",
-                name,
-                {"top_features": top},
-            )
-        )
+    message = f"PSI >= {cfg.psi_severe} em {name}"
+    return Alert("data_drift", "critical", message, name, {"top_features": top})
+
+
+def _model_alert(report: dict, cfg: MonitoringConfig) -> Alert | None:
+    """Crítico se AUC < SLO ou política CRÍTICO; aviso se política ATENÇÃO."""
+    name, perf, decision = report["window"], report["performance"], report["decision"]
     if perf.auc < cfg.auc_slo or decision.severity == policy.CRITICAL:
-        dispatcher.notify(
-            Alert(
-                "model_degradation",
-                "critical",
-                f"{name}: {decision.severity}",
-                name,
-                {"auc": round(perf.auc, 4)},
-            )
-        )
-    elif decision.severity == policy.ATTENTION:
-        dispatcher.notify(
-            Alert("model_degradation", "warning", f"{name}: {'; '.join(decision.reasons)}", name)
-        )
+        details = {"auc": round(perf.auc, 4)}
+        return Alert("model_degradation", "critical", f"{name}: {decision.severity}", name, details)
+    if decision.severity == policy.ATTENTION:
+        reasons = "; ".join(decision.reasons)
+        return Alert("model_degradation", "warning", f"{name}: {reasons}", name)
+    return None
 
 
 def _log_mlflow(report: dict, step: int, share: float) -> None:
@@ -165,31 +160,30 @@ def _log_mlflow(report: dict, step: int, share: float) -> None:
         tracking.log_artifact(Path(report["html"]))
 
 
+def _window_summary(report: dict) -> dict:
+    """Resumo serializável de uma janela (drift, performance, política e cross-check)."""
+    table, decision = report["table"], report["decision"]
+    return {
+        "n_rows": report["n_rows"],
+        "drift_share": drift_share(table),
+        "n_drifted": int(table["drifted"].sum()),
+        "drifted_features": table.loc[table["drifted"], "feature"].tolist(),
+        "max_psi": float(table["psi"].max()),
+        **report["performance"].to_dict(),
+        "severity": decision.severity,
+        "action": decision.action,
+        "reasons": decision.reasons,
+        "cross_check": report["cross_check"],
+    }
+
+
 def summarize(reports: list[dict]) -> tuple[pd.DataFrame, dict]:
     """Tabela longa window x feature e resumo por janela."""
-    long = pd.concat(
-        [
-            r["table"].assign(window=r["window"]).merge(r["evidently"], on="feature")
-            for r in reports
-        ],
-        ignore_index=True,
-    )
-    summary = {
-        r["window"]: {
-            "n_rows": r["n_rows"],
-            "drift_share": drift_share(r["table"]),
-            "n_drifted": int(r["table"]["drifted"].sum()),
-            "drifted_features": r["table"].loc[r["table"]["drifted"], "feature"].tolist(),
-            "max_psi": float(r["table"]["psi"].max()),
-            **r["performance"].to_dict(),
-            "severity": r["decision"].severity,
-            "action": r["decision"].action,
-            "reasons": r["decision"].reasons,
-            "cross_check": r["cross_check"],
-        }
-        for r in reports
-    }
-    return long, summary
+    frames = [
+        r["table"].assign(window=r["window"]).merge(r["evidently"], on="feature") for r in reports
+    ]
+    long = pd.concat(frames, ignore_index=True)
+    return long, {r["window"]: _window_summary(r) for r in reports}
 
 
 def write_outputs(long: pd.DataFrame, summary: dict, settings: Settings) -> Path:

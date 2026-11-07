@@ -78,6 +78,7 @@ class PrepareTask(Task):
     name = "prepare"
 
     def execute(self, settings: Settings | None = None, raw: pd.DataFrame | None = None) -> Any:
+        """Executa o prepare e conta as linhas gravadas."""
         result = prepare(settings, raw)
         self.rows = sum(result.values())
         return result
@@ -89,6 +90,7 @@ class ValidateTask(Task):
     name = "validate"
 
     def execute(self, path: Path, settings: Settings | None = None) -> Any:
+        """Valida o arquivo no contrato."""
         validate_file(path, settings)
 
 
@@ -98,6 +100,7 @@ class TrainTask(Task):
     name = "train"
 
     def execute(self, settings: Settings | None = None) -> Any:
+        """Treina, avalia e aplica o gate."""
         return train.run(settings)
 
 
@@ -107,6 +110,7 @@ class SimulateTask(Task):
     name = "simulate"
 
     def execute(self, settings: Settings | None = None) -> Any:
+        """Gera as janelas e conta as linhas."""
         result = simulate(settings)
         self.rows = sum(result.values())
         return result
@@ -118,6 +122,7 @@ class MonitorTask(Task):
     name = "monitor"
 
     def execute(self, settings: Settings | None = None) -> Any:
+        """Monitora todas as janelas persistidas."""
         summary = monitor.monitor_windows(settings, self.dispatcher, self.metrics)
         self.rows = sum(s["n_rows"] for s in summary.values())
         return summary
@@ -129,6 +134,7 @@ class CausalTask(Task):
     name = "causal"
 
     def execute(self, settings: Settings | None = None) -> Any:
+        """Roda a atribuição causal na janela final."""
         return causal.run(settings=settings)
 
 
@@ -138,6 +144,7 @@ class FairnessTask(Task):
     name = "fairness"
 
     def execute(self, settings: Settings | None = None) -> Any:
+        """Audita vieses no reference e na janela final."""
         return fairness.run(settings=settings)
 
 
@@ -147,6 +154,7 @@ class ReportTask(Task):
     name = "report"
 
     def execute(self, settings: Settings | None = None) -> Any:
+        """Gera o painel HTML consolidado."""
         return report.build_report(settings)
 
 
@@ -156,4 +164,5 @@ class RetrainTask(Task):
     name = "retrain"
 
     def execute(self, windows: list[str], settings: Settings | None = None) -> Any:
+        """Retreina com as janelas indicadas."""
         return retrain.run(windows, settings=settings)

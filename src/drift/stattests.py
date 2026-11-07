@@ -88,6 +88,7 @@ class PSITest(StatTest):
     name = "psi"
 
     def compute(self, ref: pd.Series, cur: pd.Series, bins: Bins | None = None) -> StatResult:
+        """PSI da janela contra os bins do reference."""
         bins = bins or Bins(ref)
         value = psi_from_probs(bins.ref_probs, bins.probs(np.asarray(cur)))
         return StatResult(value, None, value >= self.threshold, self.threshold)
@@ -99,6 +100,7 @@ class KSTest(StatTest):
     name = "ks"
 
     def compute(self, ref: pd.Series, cur: pd.Series, bins: Bins | None = None) -> StatResult:
+        """KS de duas amostras; drifted se p < alfa."""
         res = stats.ks_2samp(np.asarray(ref, float), np.asarray(cur, float))
         return StatResult(
             float(res.statistic), float(res.pvalue), res.pvalue < self.threshold, self.threshold
@@ -111,6 +113,7 @@ class ChiSquareTest(StatTest):
     name = "chi2"
 
     def compute(self, ref: pd.Series, cur: pd.Series, bins: Bins | None = None) -> StatResult:
+        """Qui-quadrado sobre a tabela de contagens; drifted se p < alfa."""
         table = pd.concat([pd.Series(ref).value_counts(), pd.Series(cur).value_counts()], axis=1)
         table = table.fillna(0).to_numpy()
         table = table[table.sum(axis=1) > 0]
@@ -126,6 +129,7 @@ class JensenShannonTest(StatTest):
     name = "js"
 
     def compute(self, ref: pd.Series, cur: pd.Series, bins: Bins | None = None) -> StatResult:
+        """Distância JS (base 2) entre as distribuições binadas."""
         bins = bins or Bins(ref)
         q = bins.probs(np.asarray(cur))
         value = float(jensenshannon(bins.ref_probs + EPSILON, q + EPSILON, base=2))

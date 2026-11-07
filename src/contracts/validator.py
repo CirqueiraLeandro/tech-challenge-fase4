@@ -6,6 +6,7 @@ import html
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 from pandera.errors import SchemaErrors
@@ -76,7 +77,8 @@ def _example(df: pd.DataFrame, index: object, value: object) -> dict:
     if HASH_COL in df.columns and index in df.index and not pd.isna(index):
         client = short_hash(df.loc[index, HASH_COL])
     shown = None if pd.isna(value) else str(value)
-    return {"index": None if pd.isna(index) else int(index), "value": shown, "client_hash": client}
+    position = None if pd.isna(index) else int(cast(int, index))
+    return {"index": position, "value": shown, "client_hash": client}
 
 
 DATAFRAME_LEVEL_CHECKS = {"no_exact_duplicates"}

@@ -31,6 +31,7 @@ def command(name: str) -> Callable:
     """Registra uma função como subcomando."""
 
     def decorator(func: Callable[[argparse.Namespace], Any]) -> Callable:
+        """Adiciona ``func`` ao registro de comandos."""
         COMMANDS[name] = func
         return func
 

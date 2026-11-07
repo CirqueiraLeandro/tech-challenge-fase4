@@ -112,7 +112,8 @@ def generate_window(
 def split_chunks(pool: pd.DataFrame, n_windows: int, seed: int) -> list[pd.DataFrame]:
     """Particiona o pool em ``n_windows`` blocos disjuntos (embaralhados com a seed)."""
     shuffled = pool.sample(frac=1.0, random_state=seed).reset_index(drop=True)
-    return [c.reset_index(drop=True) for c in np.array_split(shuffled, n_windows)]
+    positions = np.array_split(np.arange(len(shuffled)), n_windows)
+    return [shuffled.iloc[idx].reset_index(drop=True) for idx in positions]
 
 
 def simulate_windows(

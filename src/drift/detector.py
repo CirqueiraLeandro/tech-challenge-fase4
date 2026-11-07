@@ -62,7 +62,7 @@ class DriftDetector:
         ks = KSTest(alpha).compute(ref, cur)
         categorical = feature in CATEGORICAL_FEATURES
         chi = ChiSquareTest(alpha).compute(ref, cur) if categorical else None
-        p_value = chi.p_value if chi else ks.p_value
+        p_value = float(chi.p_value if chi and chi.p_value is not None else ks.p_value or 1.0)
         return {
             "feature": feature,
             "psi": psi,
