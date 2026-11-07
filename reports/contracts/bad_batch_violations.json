@@ -5,26 +5,26 @@
   "violations": [
     {
       "rule_id": "H1",
-      "column": "RawCreditSchema",
-      "check": "column_in_dataframe",
-      "n_cases": 1,
-      "examples": [
-        {
-          "index": null,
-          "value": "bill_amt6",
-          "client_hash": null
-        }
-      ]
-    },
-    {
-      "rule_id": "H1",
-      "column": "RawCreditSchema",
+      "column": "bill_amount_6",
       "check": "column_in_schema",
       "n_cases": 1,
       "examples": [
         {
           "index": null,
           "value": "bill_amount_6",
+          "client_hash": null
+        }
+      ]
+    },
+    {
+      "rule_id": "H1",
+      "column": "bill_amt6",
+      "check": "column_in_dataframe",
+      "n_cases": 1,
+      "examples": [
+        {
+          "index": null,
+          "value": "bill_amt6",
           "client_hash": null
         }
       ]
@@ -38,27 +38,27 @@
         {
           "index": 3,
           "value": null,
-          "client_hash": "025462da4f26"
+          "client_hash": "218484b19c7d"
         },
         {
           "index": 0,
           "value": null,
-          "client_hash": "cd79bce2855f"
+          "client_hash": "046c21193c21"
         },
         {
           "index": 1,
           "value": null,
-          "client_hash": "52e19ee1f9a5"
+          "client_hash": "8d78eebca976"
         },
         {
           "index": 2,
           "value": null,
-          "client_hash": "77a947a1a337"
+          "client_hash": "2a9e0c4c4af4"
         },
         {
           "index": 4,
           "value": null,
-          "client_hash": "70911aa1914f"
+          "client_hash": "f5ab1905035f"
         }
       ]
     },
@@ -71,7 +71,7 @@
         {
           "index": 5,
           "value": "15",
-          "client_hash": "8598cfe333a4"
+          "client_hash": "45ead4e7bfbf"
         }
       ]
     },
@@ -84,7 +84,7 @@
         {
           "index": 6,
           "value": "130",
-          "client_hash": "d19cfe06127d"
+          "client_hash": "501429fa2e4f"
         }
       ]
     },
@@ -97,7 +97,7 @@
         {
           "index": 7,
           "value": "-5000.0",
-          "client_hash": "824fc4444b70"
+          "client_hash": "b6b7afc3ba10"
         }
       ]
     },
@@ -110,7 +110,7 @@
         {
           "index": 8,
           "value": "9",
-          "client_hash": "fd2f36c868ab"
+          "client_hash": "ab2805779efc"
         }
       ]
     },
@@ -122,23 +122,23 @@
       "examples": [
         {
           "index": 11,
-          "value": "cf6f96d5f2858b4114ad83ee7a759d5d9c9cfa55f9b116cd3632f2aee2d7506b",
-          "client_hash": "cf6f96d5f285"
+          "value": "0b2f3e089c96611d2aca7f1e2d934aa9e6eabf1459fafcd6ebe9fe5fbb71c092",
+          "client_hash": "0b2f3e089c96"
         },
         {
           "index": 12,
-          "value": "901811cb07ae7a261089568bce74d44ff5edbb5d73f56642fcfd174f1aafb080",
-          "client_hash": "901811cb07ae"
+          "value": "42ff2e71ab50f5e804e589e700f8818cac1527572cd7eff1bf5d63532101b369",
+          "client_hash": "42ff2e71ab50"
         },
         {
           "index": 300,
-          "value": "901811cb07ae7a261089568bce74d44ff5edbb5d73f56642fcfd174f1aafb080",
-          "client_hash": "901811cb07ae"
+          "value": "42ff2e71ab50f5e804e589e700f8818cac1527572cd7eff1bf5d63532101b369",
+          "client_hash": "42ff2e71ab50"
         },
         {
           "index": 10,
-          "value": "cf6f96d5f2858b4114ad83ee7a759d5d9c9cfa55f9b116cd3632f2aee2d7506b",
-          "client_hash": "cf6f96d5f285"
+          "value": "0b2f3e089c96611d2aca7f1e2d934aa9e6eabf1459fafcd6ebe9fe5fbb71c092",
+          "client_hash": "0b2f3e089c96"
         }
       ]
     },
@@ -150,8 +150,8 @@
       "examples": [
         {
           "index": 300,
-          "value": "-1",
-          "client_hash": "901811cb07ae"
+          "value": "0",
+          "client_hash": "42ff2e71ab50"
         }
       ]
     },
@@ -164,7 +164,7 @@
         {
           "index": 9,
           "value": "-100.0",
-          "client_hash": "1d119d1422c6"
+          "client_hash": "b2d94422a20d"
         }
       ]
     }

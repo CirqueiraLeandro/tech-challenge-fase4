@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "n_rows": 1500,
+  "n_failed_rows": 0,
+  "violations": [],
+  "soft_warnings": [],
+  "contract_version": "1.0.0",
+  "violated_rules": []
+}
