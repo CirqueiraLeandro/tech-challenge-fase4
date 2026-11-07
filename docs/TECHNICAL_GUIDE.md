@@ -66,6 +66,9 @@ direto no diretório servido.
 | 10 | Windows: sem `make`; EPERM em `copystat` | tabela de comandos diretos; `shutil.copyfile`; `pathlib` e `encoding="utf-8"` em todo lugar |
 | 11 | Console Windows é cp1252 e o log é JSON com `ensure_ascii=False` | `stderr.reconfigure(encoding="utf-8")` |
 | 12 | Counter do `prometheus_client` expõe sufixo `_total` automaticamente | `Counter("credit_rows_processed")` → `credit_rows_processed_total` |
+| 13 | `np.array_split` sobre DataFrame funciona, mas emite `FutureWarning` (`swapaxes`) e não é tipado | partição por posições (`np.array_split(np.arange(n))` + `iloc`); janelas comparadas linha a linha: idênticas |
+| 14 | Logger configurado na importação: a suíte gravava em `logs/pipeline.jsonl` do projeto e o painel exibia execuções de teste | `conftest` aponta `LOGS_DIR` para um diretório temporário; o painel lê `current_log_file()` |
+| 15 | `.callout strong{display:block}` (template HTML dos PDFs) quebra linha em negrito inline | negrito inline com `<b>` |
 
 ## 4. Reprodutibilidade e dados
 

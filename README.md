@@ -266,8 +266,10 @@ Logs estruturados em JSON (`logs/pipeline.jsonl`, `logs/alerts.jsonl`) **sem dad
 automatizado). O painel HTML consolidado ([`reports/index.html`](reports/index.html)) agrega status das
 tasks, contratos, heatmap PSI, curva de AUC, causal, fairness e retreino, sem depender de servidor.
 
-Tempos reais do último run completo (`logs/pipeline.jsonl`): prepare 3,1 s · train 8,9 s · simulate 0,08 s ·
-monitor 24,0 s (6 janelas, incl. Evidently e MLflow) · causal 1,4 s · fairness 0,1 s · report 0,7 s.
+![Painel HTML offline](docs/images/reports_index.png)
+
+Tempos reais do último run completo (`logs/pipeline.jsonl`): prepare 2,4 s · train 8,3 s · simulate 0,07 s ·
+monitor 20,1 s (6 janelas, incl. Evidently e MLflow) · causal 1,3 s · fairness 0,1 s · report 0,6 s.
 
 ## 8. Causalidade
 
@@ -367,7 +369,7 @@ desempenho (princípio da funcionalidade total).
 | Incorporada ao design | módulo dedicado de privacidade | `src/privacy/` |
 | Funcionalidade total | minimização sem perda de AUC (medido) | `src/models/train.py` |
 | Segurança ponta a ponta | chave HMAC em `.env` (obrigatória fora de teste), quarentena sem PII, dados no `.gitignore` | `.env.example`, `.gitignore` |
-| Visibilidade e transparência | Model Card, *reason codes*, ROPA | `docs/MODEL_CARD.md`, `docs/GOVERNANCE.md` |
+| Visibilidade e transparência | Model Card, *reason codes*, ROPA | `docs/MODEL_CARD.pdf`, `docs/GOVERNANCE.md` |
 | Respeito ao usuário | direitos dos arts. 18 e 20 | seção 9.2 |
 
 O CI nunca usa dado real (dados sintéticos como medida de privacidade).
@@ -418,8 +420,9 @@ em [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 
 ## 10. Testes e qualidade
 
-- **158 testes**, **98,35% de cobertura** de `src/` (`pytest --cov=src`, meta ≥ 90 testes e ≥ 95%); a suíte
-  roda sem o dataset real. `ruff check` e `ruff format --check` sem erros.
+- **158 testes**, **98,67% de cobertura** de `src/` (`pytest --cov=src`, meta ≥ 90 testes e ≥ 95%); a suíte
+  roda sem o dataset real e grava seus logs num diretório temporário (nunca em `logs/` do projeto).
+  `ruff check`, `ruff format --check` e `mypy src scripts` sem erros; `pre-commit` com os mesmos hooks.
 - CI (`.github/workflows/ci.yml`) com 4 jobs: `lint`, `test`, `contract-gate` (afirma exit 2 no lote ruim e
   exit 0 no limpo) e `drift-demo` (`demo --synthetic` + upload de `reports/`).
 - Patterns: **Strategy** (stattests), **Factory** (modelos/stattests), **Template Method** (`Task`),
@@ -436,6 +439,13 @@ em [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 - MLflow com backend HTTP fora do ar travava a suíte nos *retries* → 0 retries e timeout de 3 s (degradação rápida).
 - O PSI é limitado por n e por binning (PSI próprio × Evidently divergem em `payment_ratio`); sinal de
   desempenho (AUC) é ruidoso em janelas pequenas — por isso a política combina magnitude, desempenho e calibração.
+- **Isolamento dos testes também vale para logs:** o logger é configurado na importação e a suíte gravava no
+  `logs/pipeline.jsonl` do projeto; como o painel lê o último `task_fim` de cada task, ele passou a exibir
+  execuções de teste (inclusive falhas provocadas de propósito). Correção: a suíte loga em diretório
+  temporário e o painel lê o arquivo efetivamente usado pelo logger (`current_log_file()`), com teste.
+- Uma revisão estática final (mypy + auditoria de tamanho de função) encontrou 6 funções acima de 20 linhas
+  úteis e 5 erros de tipo — entre eles `np.array_split` sobre DataFrame, que gerava `FutureWarning`; todos
+  corrigidos sem mudar resultados (as janelas M1..M6 foram comparadas linha a linha antes e depois).
 
 ## 12. Limitações
 
@@ -449,5 +459,5 @@ Pendências de entrega: link do vídeo STAR, badge do CI e print do CI verde (ex
 [`docs/PROJECT_OVERVIEW.md`](docs/PROJECT_OVERVIEW.md) · [`docs/TECHNICAL_GUIDE.md`](docs/TECHNICAL_GUIDE.md) ·
 [`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md) · [`docs/DRIFT_REPORT.md`](docs/DRIFT_REPORT.md) ·
 [`docs/CAUSAL_ANALYSIS.md`](docs/CAUSAL_ANALYSIS.md) · [`docs/MONITORING.md`](docs/MONITORING.md) ·
-[`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) · [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) (+PDF) ·
-[`docs/ML_CANVAS.md`](docs/ML_CANVAS.md) (+PDF)
+[`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) · [`docs/MODEL_CARD.pdf`](docs/MODEL_CARD.pdf) ·
+[`docs/ML_CANVAS.pdf`](docs/ML_CANVAS.pdf)
