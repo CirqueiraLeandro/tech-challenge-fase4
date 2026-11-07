@@ -1,0 +1,10 @@
+# Limiares, SLOs e política de resposta (seção 8.6 / 9.7)
+psi_moderate: 0.10
+psi_severe: 0.20
+ks_alpha: 0.05
+auc_drop_attention: 0.02
+auc_drop_critical: 0.05
+calibration_gap_critical: 0.05
+auc_slo: 0.72
+bonferroni: false
+critical_features: [limit_bal, bill_amt1, pay_amt1, pay_0, pay_2, utilization, payment_ratio]

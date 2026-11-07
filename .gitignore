@@ -1,0 +1,34 @@
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Dados e artefatos (reprodutíveis via scripts)
+data/raw/*
+data/reference/*
+data/production/*
+data/incoming/*
+data/quarantine/*
+!data/**/.gitkeep
+models/*
+!models/.gitkeep
+mlruns/
+mlflow.db
+mlflow_data/
+logs/*
+!logs/.gitkeep
+reports/drift/M[2-5]_*.html
+
+.env
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Arquivos locais de apoio na raiz (não versionados)
+/*.pdf
+/*.txt

@@ -1,0 +1,68 @@
+[tool.poetry]
+name = "credit-scoring-sustentacao"
+version = "0.1.0"
+description = "Sustentação e confiabilidade de um modelo de Credit Scoring: data contracts, drift, observabilidade, causalidade e LGPD."
+authors = ["Leandro Cirqueira <leandro.mth@hotmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+pandas = "*"
+numpy = "*"
+scipy = "*"
+scikit-learn = "*"
+xgboost = "*"
+pandera = "*"
+evidently = "*"
+mlflow = "*"
+prometheus-client = "*"
+pydantic = "*"
+pydantic-settings = "*"
+python-dotenv = "*"
+pyyaml = "*"
+matplotlib = "*"
+psutil = "*"
+pyarrow = "*"
+ucimlrepo = "*"
+requests = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-cov = "*"
+ruff = "*"
+mypy = "*"
+pre-commit = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+markers = [
+    "smoke: testes rápidos de fumaça das integrações",
+    "schema: testes do contrato de dados (Pandera)",
+    "unit: testes unitários isolados",
+    "integration: testes de integração entre módulos",
+    "requires_data: testes que dependem do dataset real (excluídos do CI)",
+]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning", "ignore::UserWarning"]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
