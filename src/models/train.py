@@ -90,7 +90,9 @@ def track_training(
 ) -> str | None:
     """Loga o run em 'credit-training' e registra a versão; devolve a versão (ou None)."""
     tags = {k: str(meta[k]) for k in ("dataset_sha256", "git_sha", "contract_version")}
-    with tracking.tracked_run(tracking.EXP_TRAINING, f"train-{meta['model_type']}", tags) as run:
+    with tracking.tracked_run(
+        tracking.EXP_TRAINING, f"{meta['label']}-{meta['model_type']}", tags
+    ) as run:
         tracking.log_params({"model_type": meta["model_type"], "n_features": len(MODEL_FEATURES)})
         tracking.log_metrics({k: v for k, v in metrics.items() if k != "confusion"})
         tracking.log_artifact(plot)
@@ -99,21 +101,31 @@ def track_training(
         return registry.log_model(model, meta["model_type"], x_te, model.predict_proba(x_te)[:, 1])
 
 
-def run(settings: Settings | None = None) -> dict:
-    """Treina, avalia, grava o candidate e promove se passar no gate."""
+def run(
+    settings: Settings | None = None, extra_train: pd.DataFrame | None = None, label: str = "train"
+) -> dict:
+    """Treina, avalia, grava o candidate e promove se passar no gate.
+
+    ``extra_train`` acrescenta janelas rotuladas ao treino (retreino contínuo); o teste
+    permanece o hold-out do reference, de modo que o gate é o mesmo.
+    """
     settings = settings or get_settings()
     ref = load_reference(settings)
     validate_reference(ref, settings)
     train, test = split_train_test(ref, settings.random_seed)
+    if extra_train is not None:
+        train = pd.concat([train, extra_train[train.columns]], ignore_index=True)
     (x_tr, y_tr), (x_te, y_te) = build_xy(train), build_xy(test)
     model = create_model(settings.model_type, settings.random_seed).fit(x_tr, y_tr)
     score = model.predict_proba(x_te)[:, 1]
     metrics = compute_metrics(y_te.to_numpy(), score, settings.decision_threshold)
     metrics["auc_with_protected_attrs"] = auc_with_protected(train, test, settings)
-    return finalize(model, x_te, metrics, settings)
+    return finalize(model, x_te, metrics, settings, label)
 
 
-def finalize(model: Any, x_te: pd.DataFrame, metrics: dict, settings: Settings) -> dict:
+def finalize(
+    model: Any, x_te: pd.DataFrame, metrics: dict, settings: Settings, label: str = "train"
+) -> dict:
     """Persiste o candidate, registra no MLflow e executa o gate de promoção."""
     models_dir = settings.path("models")
     meta = {
@@ -125,7 +137,9 @@ def finalize(model: Any, x_te: pd.DataFrame, metrics: dict, settings: Settings) 
     save_model(model, settings.model_type, models_dir / "candidate", meta)
     plot = plot_confusion(metrics["confusion"], models_dir / "confusion_matrix.png")
     write_metrics(metrics, models_dir / "metrics.json")
-    version = track_training(model, x_te, metrics, meta | {"model_type": settings.model_type}, plot)
+    version = track_training(
+        model, x_te, metrics, meta | {"model_type": settings.model_type, "label": label}, plot
+    )
     registry.promote_if_passes(
         models_dir / "candidate", models_dir / "champion", metrics, version, settings
     )
