@@ -45,6 +45,9 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 
+[tool.ruff.lint.per-file-ignores]
+"src/contracts/rules.py" = ["E501"]  # catálogo legível por humanos
+
 [tool.pytest.ini_options]
 markers = [
     "smoke: testes rápidos de fumaça das integrações",
