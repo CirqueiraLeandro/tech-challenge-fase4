@@ -37,6 +37,14 @@ def test_normalize_x_columns():
     assert X_ORDER[0] == "limit_bal"
 
 
+def test_normalize_openml_lowercase_x_columns():
+    """OpenML (data_id 42477) entrega x1..x23 em minúsculas: deve mapear pela ordem."""
+    features = pd.DataFrame(np.arange(46).reshape(2, 23), columns=[f"x{i}" for i in range(1, 24)])
+    out = normalize_columns(features, pd.Series([0, 1]), None)
+    assert list(out.columns) == RAW_COLUMNS
+    assert out["limit_bal"].tolist() == [0, 23] and out["pay_amt6"].tolist() == [22, 45]
+
+
 def test_normalize_uci_names():
     df = make_synthetic_credit(10)
     upper = df.drop(columns=[ID_COL, TARGET]).rename(columns=str.upper)

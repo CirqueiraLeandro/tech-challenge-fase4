@@ -5,6 +5,7 @@ Tenta ``ucimlrepo`` e cai para ``fetch_openml``. Saída: data/raw/credit_default
 
 from __future__ import annotations
 
+import re
 import sys
 
 import pandas as pd
@@ -17,14 +18,15 @@ from src.logger import get_logger
 logger = get_logger(__name__)
 EXPECTED_ROWS = 30_000
 UCI_URL = "https://archive.ics.uci.edu/dataset/350"
+OPENML_DATA_ID = 42477  # versão 1: 30.000 linhas, colunas x1..x23, alvo y
 
 
 def normalize_columns(
     features: pd.DataFrame, target: pd.Series, ids: pd.Series | None
 ) -> pd.DataFrame:
-    """Padroniza nomes: aceita nomes UCI originais ou X1..X23 (ordem do dataset)."""
+    """Padroniza nomes: aceita nomes UCI originais ou X1..X23 / x1..x23 (ordem do dataset)."""
     features = features.copy()
-    if all(str(c).startswith("X") for c in features.columns):
+    if all(re.fullmatch(r"[xX]\d+", str(c)) for c in features.columns):
         features.columns = X_ORDER
     else:
         features = features.rename(columns=UCI_RENAME)
@@ -45,7 +47,8 @@ def _from_ucimlrepo() -> pd.DataFrame:
 def _from_openml() -> pd.DataFrame:
     from sklearn.datasets import fetch_openml
 
-    bunch = fetch_openml(name="default-of-credit-card-clients", as_frame=True)
+    # data_id fixo: a busca por nome é ambígua (a versão 2, id 45016, é um recorte de 13.272 linhas)
+    bunch = fetch_openml(data_id=OPENML_DATA_ID, as_frame=True)
     return normalize_columns(bunch.data, bunch.target.astype(int), None)
 
 

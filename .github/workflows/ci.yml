@@ -44,7 +44,7 @@ jobs:
           code=${PIPESTATUS[0]}
           echo '### Testes' >> "$GITHUB_STEP_SUMMARY"
           tail -n 15 pytest.log | sed 's/^/    /' >> "$GITHUB_STEP_SUMMARY"
-          exit $code
+          exit "$code"
 
   contract-gate:
     runs-on: ubuntu-latest
