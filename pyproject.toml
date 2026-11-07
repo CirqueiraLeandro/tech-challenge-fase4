@@ -8,31 +8,31 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-pandas = ">=2.2,<3"
-numpy = "*"
-scipy = "*"
-scikit-learn = "*"
-xgboost = "*"
-pandera = "*"
-evidently = "*"
-mlflow = "*"
-prometheus-client = "*"
-pydantic = "*"
-pydantic-settings = "*"
-python-dotenv = "*"
-pyyaml = "*"
-matplotlib = "*"
-psutil = "*"
-pyarrow = "*"
-ucimlrepo = "*"
-requests = "*"
+pandas = ">=2.3.3,<3"   # evidently 0.7.x não importa com pandas 3
+numpy = "^2.4.6"
+scipy = "^1.17.1"
+scikit-learn = "1.9.1"   # versão fixa: portabilidade de artefato (lição 13.3)
+xgboost = "3.2.0"   # versão fixa: modelo em JSON nativo (lição 13.3)
+pandera = "0.35.0"   # import pandera.pandas
+evidently = "0.7.23"   # API nova (Report([...]).run); legacy em evidently.legacy
+mlflow = "3.18.0"
+prometheus-client = "^0.26.0"
+pydantic = "^2.14.3"
+pydantic-settings = "^2.16.2"
+python-dotenv = "^1.2.4"
+pyyaml = "^6.0.3"
+matplotlib = "^3.11.2"
+psutil = "^7.2.2"
+pyarrow = "^26.0.1"
+ucimlrepo = "^0.0.7"
+requests = "^2.34.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "*"
-pytest-cov = "*"
-ruff = "*"
-mypy = "*"
-pre-commit = "*"
+pytest = "^9.2.0"
+pytest-cov = "^7.1.0"
+ruff = "0.17.4"
+mypy = "^2.4.1"
+pre-commit = "^4.7.0"
 
 [build-system]
 requires = ["poetry-core"]

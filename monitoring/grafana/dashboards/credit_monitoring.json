@@ -606,7 +606,7 @@
       "gridPos": {
         "x": 0,
         "y": 18,
-        "w": 12,
+        "w": 24,
         "h": 8
       },
       "targets": [
@@ -668,10 +668,10 @@
       },
       "description": "Verde < 0,10 estável; laranja 0,10-0,20 moderado; vermelho >= 0,20 severo.",
       "gridPos": {
-        "x": 12,
-        "y": 18,
-        "w": 12,
-        "h": 12
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 24
       },
       "targets": [
         {
