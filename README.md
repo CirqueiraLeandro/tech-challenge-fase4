@@ -420,7 +420,7 @@ em [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 
 ## 10. Testes e qualidade
 
-- **158 testes**, **98,67% de cobertura** de `src/` (`pytest --cov=src`, meta ≥ 90 testes e ≥ 95%); a suíte
+- **159 testes**, **98,67% de cobertura** de `src/` (`pytest --cov=src`, meta ≥ 90 testes e ≥ 95%); a suíte
   roda sem o dataset real e grava seus logs num diretório temporário (nunca em `logs/` do projeto).
   `ruff check`, `ruff format --check` e `mypy src scripts` sem erros; `pre-commit` com os mesmos hooks.
 - CI (`.github/workflows/ci.yml`) com 4 jobs: `lint`, `test`, `contract-gate` (afirma exit 2 no lote ruim e
@@ -446,6 +446,11 @@ em [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 - Uma revisão estática final (mypy + auditoria de tamanho de função) encontrou 6 funções acima de 20 linhas
   úteis e 5 erros de tipo — entre eles `np.array_split` sobre DataFrame, que gerava `FutureWarning`; todos
   corrigidos sem mudar resultados (as janelas M1..M6 foram comparadas linha a linha antes e depois).
+- **Testar o caminho de exceção, não só o feliz:** o fallback de download pelo OpenML nunca tinha rodado de
+  verdade. Forçando a falha da fonte principal, ele quebrava: o OpenML entrega `x1..x23` em minúsculas e a busca
+  por nome é ambígua (a versão 2 é um recorte de 13.272 linhas sem sexo/escolaridade/estado civil). Correção:
+  `data_id=42477` fixo e reconhecimento case-insensitive; o fallback agora devolve dados idênticos ao UCI nas
+  24 colunas e nos 30.000 IDs. O workflow do CI também passou pelo `actionlint` (um aviso de shellcheck corrigido).
 
 ## 12. Limitações
 

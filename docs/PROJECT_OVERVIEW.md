@@ -40,6 +40,6 @@ detecção de drift, dashboards/relatórios HTML, governança no README, commits
 - A análise causal mostra que o desemprego **latente** explica ~94% do gap, enquanto a inflação domina a mudança
   em P(X); o diagnóstico observacional falha no desemprego (como previsto).
 - O retreino com M4+M5 recupera o AUC em M6 de 0,7501 para 0,7702 (e o Brier de 0,1733 para 0,1685).
-- Entrega: 158 testes, 98,67% de cobertura, CI com 4 jobs; ruff e mypy sem erros.
+- Entrega: 159 testes, 98,67% de cobertura, CI com 4 jobs; ruff e mypy sem erros.
 
 Detalhes e evidências no [README](../README.md).
