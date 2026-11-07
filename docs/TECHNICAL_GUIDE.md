@@ -68,9 +68,8 @@ direto no diretório servido.
 | 12 | Counter do `prometheus_client` expõe sufixo `_total` automaticamente | `Counter("credit_rows_processed")` → `credit_rows_processed_total` |
 | 13 | `np.array_split` sobre DataFrame funciona, mas emite `FutureWarning` (`swapaxes`) e não é tipado | partição por posições (`np.array_split(np.arange(n))` + `iloc`); janelas comparadas linha a linha: idênticas |
 | 14 | Logger configurado na importação: a suíte gravava em `logs/pipeline.jsonl` do projeto e o painel exibia execuções de teste | `conftest` aponta `LOGS_DIR` para um diretório temporário; o painel lê `current_log_file()` |
-| 15 | `.callout strong{display:block}` (template HTML dos PDFs) quebra linha em negrito inline | negrito inline com `<b>` |
-| 16 | **Fallback OpenML nunca exercitado:** o dataset vem com `x1..x23` (minúsculas) e a busca por nome é ambígua (versão 2, id 45016, tem 13.272 linhas e 20 colunas) | `data_id=42477` fixo + regex `[xX]\d+`; validado forçando a falha do ucimlrepo: dados idênticos ao UCI |
-| 17 | `actionlint`/shellcheck SC2086 no job de testes (`exit $code` sem aspas) | `exit "$code"`; workflow sem avisos |
+| 15 | **Fallback OpenML nunca exercitado:** o dataset vem com `x1..x23` (minúsculas) e a busca por nome é ambígua (versão 2, id 45016, tem 13.272 linhas e 20 colunas) | `data_id=42477` fixo + regex `[xX]\d+`; validado forçando a falha do ucimlrepo: dados idênticos ao UCI |
+| 16 | `actionlint`/shellcheck SC2086 no job de testes (`exit $code` sem aspas) | `exit "$code"`; workflow sem avisos |
 
 ## 4. Reprodutibilidade e dados
 

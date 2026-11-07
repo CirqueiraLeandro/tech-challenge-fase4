@@ -3,12 +3,15 @@
 > Tech Challenge — Fase 4 (MLET). Data contracts, simulação e detecção de drift, observabilidade,
 > análise causal da degradação e governança LGPD em volta de um classificador de inadimplência.
 
-![CI](https://github.com/<usuario>/tech_challenge-fase4/actions/workflows/ci.yml/badge.svg)
-<!-- O badge só funciona após o push do repositório (pendente: o push não foi feito). -->
+[![CI](https://github.com/CirqueiraLeandro/tech-challenge-fase4/actions/workflows/ci.yml/badge.svg)](https://github.com/CirqueiraLeandro/tech-challenge-fase4/actions/workflows/ci.yml)
+
+**Repositório:** <https://github.com/CirqueiraLeandro/tech-challenge-fase4>
 
 **Vídeo STAR (≤ 5 min):** _pendente — gravar e colocar o link aqui antes da entrega._
 
 **Painel offline (abre direto do repositório, sem servidor):** [`reports/index.html`](reports/index.html)
+
+**Documentos formais:** [Model Card](docs/MODEL_CARD.pdf) · [ML Canvas](docs/ML_CANVAS.pdf)
 
 ---
 
@@ -55,6 +58,8 @@ flowchart LR
 Pré-requisitos: Python 3.11, Poetry, Docker Desktop (só para a stack de observabilidade).
 
 ```powershell
+git clone https://github.com/CirqueiraLeandro/tech-challenge-fase4.git
+cd tech-challenge-fase4
 poetry install --with dev
 copy .env.example .env        # gere a chave: python -c "import secrets; print(secrets.token_hex(32))"
 poetry run python -m scripts.download_data
@@ -457,7 +462,7 @@ em [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 Dataset de Taiwan (2005), sem renda nem data por cliente; **tempo simulado** (os mecanismos são hipóteses
 controladas, não a realidade); rótulo revelado sem atraso (em produção chega meses depois); sem renda, a
 discriminação indireta não é totalmente auditável; o modelo **não deve ser usado em decisão de crédito real**.
-Pendências de entrega: link do vídeo STAR, badge do CI e print do CI verde (exigem o push do repositório).
+Pendência de entrega: link do vídeo STAR (topo deste README).
 
 ## 13. Documentação
 
