@@ -1,7 +1,7 @@
 # Cenário causal de drift: 6 janelas mensais, intensidade t_k = k/5 (M1 = controle)
 windows: [M1, M2, M3, M4, M5, M6]
 intensities: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-window_size: 2000
+window_size: 1200
 mechanisms:
   inflacao: {enabled: true}      # covariate shift: bill_amt, pay_amt
   aperto: {enabled: true}        # covariate shift: limit_bal
