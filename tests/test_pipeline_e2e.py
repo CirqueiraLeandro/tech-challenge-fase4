@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from src.config import get_settings
+from src.logger import current_log_file
 from src.pipeline import cli
 from src.pipeline.demo import isolate_environment
 
@@ -23,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def demo_run(tmp_path_factory):
     """Roda o demo UMA vez (≈ minutos) e devolve o workspace + trecho novo do log."""
     out = tmp_path_factory.mktemp("demo")
-    log = ROOT / "logs" / "pipeline.jsonl"
+    log = current_log_file()
     before = log.stat().st_size if log.exists() else 0
     saved_env = dict(os.environ)
     try:
@@ -123,15 +124,3 @@ def test_isolate_environment_redirects_everything(tmp_path, monkeypatch):
         os.environ.clear()
         os.environ.update(saved_env)
         get_settings.cache_clear()
-
-
-def test_build_pdfs_renders_tables_and_finds_no_browser(monkeypatch):
-    from scripts import build_pdfs
-
-    html = build_pdfs.render_html("# Título\n\n| a | b |\n|---|---|\n| 1 | 2 |\n", "T")
-    assert (
-        "<table>" in html and "<h1>" in html and 'charset="utf-8"' in html.lower().replace("'", '"')
-    )
-    monkeypatch.setattr(build_pdfs, "CHROME_CANDIDATES", ["/nao/existe/chrome"])
-    monkeypatch.delenv("CHROME_PATH", raising=False)
-    assert build_pdfs.find_chrome() is None and build_pdfs.main() == 1

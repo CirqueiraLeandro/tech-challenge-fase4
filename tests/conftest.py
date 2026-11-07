@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import os
+import tempfile
 
 os.environ.setdefault("ENVIRONMENT", "test")
 os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
+# Logs da suíte em diretório temporário: nunca contaminam logs/ do projeto nem o painel.
+os.environ["LOGS_DIR"] = tempfile.mkdtemp(prefix="credit_test_logs_")
 
 import pandas as pd  # noqa: E402
 import pytest  # noqa: E402

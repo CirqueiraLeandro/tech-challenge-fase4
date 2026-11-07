@@ -22,6 +22,7 @@ _BACKUP_COUNT = 5
 _STANDARD_ATTRS = set(logging.makeLogRecord({}).__dict__) | {"message", "asctime", "taskName"}
 
 run_id_var: ContextVar[str] = ContextVar("run_id", default="-")
+_log_file: Path | None = None
 
 
 def new_run_id() -> str:
@@ -80,4 +81,15 @@ def get_logger(name: str) -> logging.Logger:
     logger.addHandler(_console_handler())
     logger.addHandler(_file_handler(logs / "pipeline.jsonl"))
     logger.propagate = False
+    _remember_log_file(logs / "pipeline.jsonl")
     return logger
+
+
+def _remember_log_file(path: Path) -> None:
+    global _log_file
+    _log_file = _log_file or path
+
+
+def current_log_file() -> Path:
+    """Arquivo JSONL em uso pelos handlers (definido na primeira configuração do logger)."""
+    return _log_file or get_settings().path("logs") / "pipeline.jsonl"

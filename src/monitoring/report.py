@@ -20,7 +20,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from src.config import Settings, get_settings, load_monitoring_config  # noqa: E402
-from src.logger import get_logger  # noqa: E402
+from src.logger import current_log_file, get_logger  # noqa: E402
 
 logger = get_logger(__name__)
 STYLE = (
@@ -55,9 +55,8 @@ def html_table(df: pd.DataFrame) -> str:
     return f"<table><tr>{head}</tr>{body}</table>"
 
 
-def task_status(logs_dir: Path) -> str:
-    """Último evento ``task_fim`` por task a partir de logs/pipeline.jsonl."""
-    path = logs_dir / "pipeline.jsonl"
+def task_status(path: Path) -> str:
+    """Último evento ``task_fim`` por task a partir do log JSONL do pipeline."""
     if not path.exists():
         return "<p>Sem execuções registradas.</p>"
     latest: dict[str, dict] = {}
@@ -115,17 +114,12 @@ def auc_curve(summary: dict, slo: float) -> str:
     return png_base64(fig)
 
 
-def drift_section(reports_dir: Path, slo: float) -> str:
-    """Seção de drift: severidade por janela, heatmap, curva de AUC e links do Evidently."""
-    summary = read_json(reports_dir / "drift" / "drift_summary.json")
-    csv = reports_dir / "drift" / "drift_summary.csv"
-    if summary is None or not csv.exists():
-        return "<p>Execute <code>monitor</code> para gerar o drift.</p>"
-    table = pd.DataFrame(
+def severity_table(summary: dict) -> pd.DataFrame:
+    """Tabela de severidade por janela (drift, desempenho e ação da política)."""
+    return pd.DataFrame(
         [
             {
-                "janela": n,
-                "drift_share": f"{s['drift_share']:.2f}",
+                "janela": n, "drift_share": f"{s['drift_share']:.2f}",
                 "max PSI": f"{s['max_psi']:.3f}",
                 "AUC": f"{s['auc']:.4f}", "queda AUC": f"{s['auc_drop']:.4f}",
                 "gap calib.": f"{s['calibration_gap']:+.4f}", "severidade": s["severity"],
@@ -134,6 +128,14 @@ def drift_section(reports_dir: Path, slo: float) -> str:
             for n, s in summary.items()
         ]
     )  # fmt: skip
+
+
+def drift_section(reports_dir: Path, slo: float) -> str:
+    """Seção de drift: severidade por janela, heatmap, curva de AUC e links do Evidently."""
+    summary = read_json(reports_dir / "drift" / "drift_summary.json")
+    csv = reports_dir / "drift" / "drift_summary.csv"
+    if summary is None or not csv.exists():
+        return "<p>Execute <code>monitor</code> para gerar o drift.</p>"
     links = " | ".join(
         f'<a href="drift/{n}_data_drift.html">{n}</a>'
         for n in summary
@@ -141,7 +143,13 @@ def drift_section(reports_dir: Path, slo: float) -> str:
     )
     long = pd.read_csv(csv, encoding="utf-8")
     charts = psi_heatmap(long) + auc_curve(summary, slo)
-    return f"{html_table(table)}<p>Relatórios Evidently: {links}</p>{charts}"
+    return f"{html_table(severity_table(summary))}<p>Relatórios Evidently: {links}</p>{charts}"
+
+
+CAUSAL_COLUMNS = [
+    "method", "mechanism", "delta_auc", "delta_calibration_gap", "delta_brier",
+    "delta_psi_sum", "solo_calibration_gap", "delta_score_psi",
+]  # fmt: skip
 
 
 def causal_section(reports_dir: Path) -> str:
@@ -152,7 +160,8 @@ def causal_section(reports_dir: Path) -> str:
     )
     if not csv.exists():
         return "<p>Execute <code>causal</code>.</p>"
-    table = pd.read_csv(csv, encoding="utf-8").round(4)
+    table = pd.read_csv(csv, encoding="utf-8")
+    table = table[[c for c in CAUSAL_COLUMNS if c in table.columns]].round(4).fillna("-")
     image = base64.b64encode(png.read_bytes()).decode() if png.exists() else ""
     return f'{html_table(table)}<img src="data:image/png;base64,{image}">'
 
@@ -187,24 +196,31 @@ def retrain_section(reports_dir: Path) -> str:
     return intro + html_table(pd.DataFrame(rows))
 
 
+def render_page(sections: list[tuple[str, str]]) -> str:
+    """Monta a página HTML completa a partir de (título, conteúdo) das seções."""
+    body = "".join(f"<h2>{html.escape(t)}</h2>{c}" for t, c in sections)
+    title = "Painel de Monitoramento - Credit Scoring"
+    return (
+        "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'>"
+        f"<title>{title}</title><style>{STYLE}</style></head>"
+        f"<body><h1>{title}</h1>{body}</body></html>"
+    )
+
+
 def build_report(settings: Settings | None = None) -> Path:
     """Gera reports/index.html a partir dos artefatos existentes."""
     settings = settings or get_settings()
     reports = settings.path("reports")
     slo = load_monitoring_config().auc_slo
-    sections = [
-        ("Saúde das tasks (último run)", task_status(settings.path("logs"))),
-        ("Data contract (lotes validados)", contracts_section(reports)),
-        ("Drift de dados e de conceito por janela", drift_section(reports, slo)),
-        ("Análise causal da degradação (janela final)", causal_section(reports)),
-        ("Auditoria de vieses (fairness)", fairness_section(reports)),
-        ("Retreino (fechamento do ciclo)", retrain_section(reports)),
-    ]
-    body = "".join(f"<h2>{html.escape(t)}</h2>{c}" for t, c in sections)
-    page = (
-        "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'>"
-        f"<title>Painel de Monitoramento - Credit Scoring</title><style>{STYLE}</style></head>"
-        f"<body><h1>Painel de Monitoramento - Credit Scoring</h1>{body}</body></html>"
+    page = render_page(
+        [
+            ("Saúde das tasks (último run)", task_status(current_log_file())),
+            ("Data contract (lotes validados)", contracts_section(reports)),
+            ("Drift de dados e de conceito por janela", drift_section(reports, slo)),
+            ("Análise causal da degradação (janela final)", causal_section(reports)),
+            ("Auditoria de vieses (fairness)", fairness_section(reports)),
+            ("Retreino (fechamento do ciclo)", retrain_section(reports)),
+        ]
     )
     path = reports / "index.html"
     path.write_text(page, encoding="utf-8")
