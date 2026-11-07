@@ -54,6 +54,11 @@ class Settings(BaseSettings):
             raise ValueError("PSEUDONYMIZATION_KEY é obrigatória fora de ENVIRONMENT=test")
         return self
 
+    def hmac_key(self) -> bytes:
+        """Chave HMAC em bytes (valor fixo apenas em ENVIRONMENT=test)."""
+        key = self.pseudonymization_key or "chave-somente-para-testes"
+        return key.encode("utf-8")
+
     def path(self, name: str) -> Path:
         """Resolve o diretório configurado ``<name>_dir`` relativo à raiz do projeto."""
         relative = Path(getattr(self, f"{name}_dir"))

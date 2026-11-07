@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-ID_COL = "client_id"
+ID_COL = "client_id"  # ID cru (somente em data/raw, nunca sai da ingestão)
+HASH_COL = "client_hash"  # ID pseudonimizado (HMAC-SHA256)
 TARGET = "default"
 
 PAY_COLS = ["pay_0", "pay_2", "pay_3", "pay_4", "pay_5", "pay_6"]
@@ -23,10 +24,13 @@ RAW_COLUMNS = [
 ]
 RAW_FEATURE_COLUMNS = [c for c in RAW_COLUMNS if c not in (ID_COL, TARGET)]
 
+# Colunas após a ingestão: client_id cru substituído por client_hash
+INGESTED_COLUMNS = [HASH_COL if c == ID_COL else c for c in RAW_COLUMNS]
+
 # Privacidade (LGPD): ver docs/GOVERNANCE.md
 PII_COLUMNS = [ID_COL]
 PROTECTED_ATTRIBUTES = ["sex", "marriage"]
-EXCLUDED_FROM_MODEL = [ID_COL, *PROTECTED_ATTRIBUTES]
+EXCLUDED_FROM_MODEL = [ID_COL, HASH_COL, *PROTECTED_ATTRIBUTES]
 
 DERIVED_FEATURES = ["utilization", "payment_ratio", "max_delay", "months_delayed"]
 MODEL_FEATURES = [
