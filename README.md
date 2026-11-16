@@ -7,7 +7,7 @@
 
 **Repositório:** <https://github.com/CirqueiraLeandro/tech-challenge-fase4>
 
-**Vídeo STAR (≤ 5 min): <https://youtu.be/9vev0TIGs2E>
+**Vídeo STAR (≤ 5 min):** <https://youtu.be/9vev0TIGs2E>
 
 **Painel offline (abre direto do repositório, sem servidor):** [`reports/index.html`](reports/index.html)
 
