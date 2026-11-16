@@ -115,7 +115,7 @@ Exit codes da CLI: `0` sucesso · `1` erro · `2` contrato violado · `3` gate r
 | Relatório PSI e KS | `reports/drift/drift_summary.csv` (PSI, JS, KS, Chi² por feature × janela) |
 | Plano de privacidade (LGPD) | seção 9 |
 | Análise causal | seção 8 e [`docs/CAUSAL_ANALYSIS.md`](docs/CAUSAL_ANALYSIS.md) |
-| Vídeo STAR | _pendente_ (link no topo) |
+| Vídeo STAR | <https://youtu.be/9vev0TIGs2E> |
 
 **Dataset:** *Default of Credit Card Clients* (UCI id=350, Yeh & Lien, 2009) — 30.000 clientes,
 23 variáveis, ~22% de inadimplência. O German Credit (1.000 linhas) não atende o mínimo de 5.000.
